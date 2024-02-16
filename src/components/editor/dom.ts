@@ -3,10 +3,10 @@ export interface DomStateElement {
   element: string;
   props: {
     style: {
-      [k: string]: any;
+      [k: string]: string;
     };
     attributes?: {
-      [k: string]: any;
+      [k: string]: string;
     };
   };
   children: DomStateElement[];
@@ -28,39 +28,24 @@ export const extractAllIds = (components: DomStateElement[]) => {
   return ids;
 };
 
-export const captureDomProps = (
-  components: DomStateElement,
-  v_document: HTMLDocument,
-) => {
-  const ids = extractAllIds([components]);
-
-  for (let i = 0; i < ids.length; i++) {
-    const ele = v_document.getElementById(ids[i]);
-    if (ele) {
-      const rect = ele.getBoundingClientRect();
-      setDomProps(components, ids[i], rect);
-    }
-  }
-};
-
 export const convertToHTML = (components: DomStateElement[]) => {
-  let html = "";
+  let html = '';
   for (let i = 0; i < components.length; i++) {
     html += `<${components[i].element} id="${components[i].id}" style="${Object.keys(
-      components[i].props.style,
+      components[i].props.style
     )
       .map((key) => `${key}:${components[i].props.style[key]}`)
-      .join(";")}"
+      .join(';')}"
       ${
         components[i].props.attributes
-          ? Object.keys(components[i].props.attributes)
-              .map((key) => `${key}="${components[i].props.attributes[key]}"`)
-              .join(" ")
-          : ""
+          ? Object.keys(components[i].props.attributes || {})
+              .map((key) => `${key}="${components[i].props.attributes![key]}"`)
+              .join(' ')
+          : ''
       }
 
     >
-      ${components[i].content || ""}
+      ${components[i].content || ''}
       ${convertToHTML(components[i].children)}
     </${components[i].element}>`;
   }
@@ -71,7 +56,7 @@ export const convertToHTML = (components: DomStateElement[]) => {
 export const addToVDom = (
   components: DomStateElement[],
   element: DomStateElement,
-  parent_id: string,
+  parent_id: string
 ) => {
   const idx_ele = components.findIndex((ele) => ele.id === parent_id);
 
